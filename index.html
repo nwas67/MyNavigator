@@ -1,22 +1,29 @@
 <!DOCTYPE html>
 <html lang="ru">
+
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
   <title>My Navigator</title>
 
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+  <link
+    rel="stylesheet"
+    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+  >
 
   <style>
-    * {
-      box-sizing: border-box;
-    }
-
-    html, body {
+    html,
+    body {
       margin: 0;
       padding: 0;
       width: 100%;
       height: 100%;
+      overflow: hidden;
     }
 
     #map {
@@ -25,9 +32,10 @@
       left: 0;
       width: 100%;
       height: 100%;
+      z-index: 1;
     }
 
-    .search {
+    .search-box {
       position: fixed;
       top: 15px;
       left: 15px;
@@ -37,18 +45,19 @@
 
     #search {
       width: 100%;
-      height: 52px;
-      border: 0;
-      border-radius: 16px;
+      height: 50px;
+      box-sizing: border-box;
       padding: 0 18px;
-      font-size: 17px;
+      border: none;
+      border-radius: 14px;
+      font-size: 16px;
       outline: none;
-      box-shadow: 0 3px 15px rgba(0,0,0,.25);
+      box-shadow: 0 3px 15px rgba(0, 0, 0, 0.2);
     }
 
     #results {
       position: fixed;
-      top: 78px;
+      top: 75px;
       left: 15px;
       right: 15px;
       z-index: 9999;
@@ -58,26 +67,26 @@
       background: white;
       padding: 14px;
       margin-bottom: 6px;
-      border-radius: 12px;
-      box-shadow: 0 2px 10px rgba(0,0,0,.2);
-      font-size: 15px;
+      border-radius: 10px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+      cursor: pointer;
     }
 
-    #location {
+    #locationBtn {
       position: fixed;
       right: 18px;
       bottom: 25px;
       z-index: 9999;
-      width: 55px;
-      height: 55px;
-      border: 0;
+      width: 52px;
+      height: 52px;
+      border: none;
       border-radius: 50%;
       background: white;
-      font-size: 25px;
-      box-shadow: 0 3px 15px rgba(0,0,0,.25);
+      font-size: 24px;
+      box-shadow: 0 3px 12px rgba(0, 0, 0, 0.25);
     }
 
-    #route {
+    #routePanel {
       display: none;
       position: fixed;
       left: 15px;
@@ -85,15 +94,14 @@
       bottom: 20px;
       z-index: 9999;
       background: white;
-      padding: 18px;
+      padding: 16px;
       border-radius: 16px;
-      box-shadow: 0 3px 18px rgba(0,0,0,.25);
-      font-size: 16px;
+      box-shadow: 0 4px 18px rgba(0, 0, 0, 0.25);
     }
 
-    #close {
+    #closeRoute {
       float: right;
-      border: 0;
+      border: none;
       background: #eee;
       border-radius: 8px;
       padding: 6px 10px;
@@ -105,22 +113,31 @@
 
   <div id="map"></div>
 
-  <div class="search">
-    <input id="search" placeholder="Куда едем?">
+  <div class="search-box">
+    <input
+      id="search"
+      type="text"
+      placeholder="Куда едем?"
+    >
   </div>
 
   <div id="results"></div>
 
-  <button id="location">📍</button>
+  <button id="locationBtn">📍</button>
 
-  <div id="route">
-    <button id="close">✕</button>
-    <div id="routeText">Маршрут...</div>
+  <div id="routePanel">
+    <button id="closeRoute">✕</button>
+
+    <div id="routeInfo">
+      Маршрут строится...
+    </div>
   </div>
 
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
   <script>
+
+    // КАРТА
 
     const map = L.map("map").setView(
       [55.751244, 37.618423],
@@ -135,26 +152,38 @@
       }
     ).addTo(map);
 
+    // ЭЛЕМЕНТЫ
+
     const search = document.getElementById("search");
     const results = document.getElementById("results");
-    const locationButton = document.getElementById("location");
-    const routeBox = document.getElementById("route");
-    const routeText = document.getElementById("routeText");
-    const closeButton = document.getElementById("close");
+    const locationBtn = document.getElementById("locationBtn");
 
-    let timer = null;
+    const routePanel =
+      document.getElementById("routePanel");
+
+    const routeInfo =
+      document.getElementById("routeInfo");
+
+    const closeRoute =
+      document.getElementById("closeRoute");
+
+    // ПЕРЕМЕННЫЕ
+
     let userLocation = null;
     let userMarker = null;
     let destinationMarker = null;
     let routeLine = null;
+    let timer = null;
+
+    // ПОИСК
 
     search.addEventListener("input", function () {
 
       clearTimeout(timer);
 
-      const text = search.value.trim();
+      const query = search.value.trim();
 
-      if (text.length < 3) {
+      if (query.length < 3) {
         results.innerHTML = "";
         return;
       }
@@ -168,101 +197,172 @@
             "?format=json" +
             "&limit=5" +
             "&q=" +
-            encodeURIComponent(text);
+            encodeURIComponent(query);
 
           const response = await fetch(url);
-          const places = await response.json();
+
+          const data = await response.json();
 
           results.innerHTML = "";
 
-          places.forEach(function (place) {
+          data.forEach(function (place) {
 
-            const item = document.createElement("div");
+            const item =
+              document.createElement("div");
 
             item.className = "result";
-            item.textContent = place.display_name;
 
-            item.onclick = function () {
+            item.textContent =
+              place.display_name;
 
-              const lat = parseFloat(place.lat);
-              const lon = parseFloat(place.lon);
-
-              map.setView([lat, lon], 15);
-
-              if (destinationMarker) {
-                map.removeLayer(destinationMarker);
-              }
+            item
 
 
-destinationMarker = L.marker([lat, lon])
-                .addTo(map);
+(
+              "click",
+              function () {
 
-              results.innerHTML = "";
-              search.value = place.display_name;
+                const lat =
+                  parseFloat(place.lat);
 
-              if (userLocation) {
-                buildRoute(
-                  userLocation.lat,
-                  userLocation.lon,
-                  lat,
-                  lon
+                const lon =
+                  parseFloat(place.lon);
+
+                map.setView(
+                  [lat, lon],
+                  15
                 );
-              }
 
-            };
+                if (destinationMarker) {
+
+                  map.removeLayer(
+                    destinationMarker
+                  );
+
+                }
+
+                destinationMarker =
+                  L.marker([lat, lon])
+                    .addTo(map)
+                    .bindPopup(
+                      place.display_name
+                    )
+                    .openPopup();
+
+                results.innerHTML = "";
+
+                search.value =
+                  place.display_name;
+
+                // ЕСЛИ ЕСТЬ ГЕОЛОКАЦИЯ —
+                // СТРОИМ МАРШРУТ
+
+                if (userLocation) {
+
+                  buildRoute(
+                    userLocation.lat,
+                    userLocation.lon,
+                    lat,
+                    lon
+                  );
+
+                }
+
+              }
+            );
 
             results.appendChild(item);
 
           });
 
         } catch (error) {
-          console.log(error);
+
+          console.error(error);
+
         }
 
       }, 500);
 
     });
 
-    locationButton.onclick = function () {
+    // ГЕОЛОКАЦИЯ
 
-      navigator.geolocation.getCurrentPosition(
+    locationBtn.addEventListener(
+      "click",
+      function () {
 
-        function (position) {
+        if (!navigator.geolocation) {
 
-          const lat = position.coords.latitude;
-          const lon = position.coords.longitude;
+          alert(
+            "Геолокация не поддерживается"
+          );
 
-          userLocation = {
-            lat: lat,
-            lon: lon
-          };
-
-          map.setView([lat, lon], 16);
-
-          if (userMarker) {
-            map.removeLayer(userMarker);
-          }
-
-          userMarker = L.circleMarker(
-            [lat, lon],
-            {
-              radius: 8,
-              color: "white",
-              weight: 3,
-              fillColor: "#1976ff",
-              fillOpacity: 1
-            }
-          ).addTo(map);
-
-        },
-
-        function () {
-          alert("Не удалось определить местоположение");
+          return;
         }
 
-      );
+        navigator.geolocation.getCurrentPosition(
 
-    };
+          function (position) {
+
+            const lat =
+              position.coords.latitude;
+
+            const lon =
+              position.coords.longitude;
+
+            userLocation = {
+              lat: lat,
+              lon: lon
+            };
+
+            map.setView(
+              [lat, lon],
+              16
+            );
+
+            if (userMarker) {
+
+              map.removeLayer(
+                userMarker
+              );
+
+            }
+
+            userMarker =
+              L.circleMarker(
+                [lat, lon],
+                {
+                  radius: 8,
+                  color: "#ffffff",
+                  weight: 3,
+                  fillColor: "#1976ff",
+                  fillOpacity: 1
+                }
+              ).addTo(map);
+
+          },
+
+          function (error) {
+
+            console.error(error);
+
+            alert(
+              "Не удалось определить местоположение"
+            );
+
+          },
+
+          {
+            enableHighAccuracy: true,
+            timeout: 10000
+          }
+
+        );
+
+      }
+    );
+
+    // МАРШРУТ
 
     async function buildRoute(
       startLat,
@@ -271,11 +371,18 @@ destinationMarker = L.marker([lat, lon])
       endLon
     ) {
 
-      routeBox.style.display = "block";
-      routeText.textContent = "Маршрут строится...";
+      routePanel.style.display =
+        "block";
+
+      routeInfo.textContent =
+        "Маршрут строится...";
 
       if (routeLine) {
-        map.removeLayer(routeLine);
+
+        map.removeLayer(
+          routeLine
+        );
+
       }
 
       try {
@@ -287,62 +394,95 @@ destinationMarker = L.marker([lat, lon])
           endLon + "," + endLat +
           "?overview=full&geometries=geojson";
 
-        const response = await fetch(url);
-        const data = await response.json();
+        const response =
+          await fetch(url);
 
-        if (!data.routes || !data.routes.length) {
-          routeText.textContent = "Маршрут не найден";
+        const data =
+          await response.json();
+
+        if (
+          !data.routes ||
+          data.routes.length === 0
+        ) {
+
+          routeInfo.textContent =
+            "Маршрут не найден";
+
           return;
         }
 
-        const route = data.routes[0];
+        const route =
+          data.routes[0];
 
         const distance =
-          (route.distance / 1000).toFixed(1);
+          (
+            route.distance / 1000
+          ).toFixed(1);
 
         const minutes =
-          Math.round(route.duration / 60);
+          Math.round(
+            route.duration / 60
+          );
 
-        routeText.innerHTML =
+        routeInfo.innerHTML =
           "<b>Маршрут готов</b><
  +
-          "Расстояние: " + distance + " км<
+          "Расстояние: " +
+          distance +
+          " км<
  +
-          "Время: " + minutes + " мин.";
+          "Время: примерно " +
+          minutes +
+          " мин.";
 
-        routeLine = L.geoJSON(
-          route.geometry
-        ).addTo(map);
+        routeLine =
+          L.geoJSON(
+            route.geometry
+          ).addTo(map);
 
         map.fitBounds(
           routeLine.getBounds(),
           {
-            padding: [60, 60]
+
+
+padding: [50, 50]
           }
         );
 
       } catch (error) {
 
-        console.log(error);
-        routeText.textContent =
+        console.error(error);
+
+        routeInfo.textContent =
           "Не удалось построить маршрут";
 
       }
 
     }
 
-    closeButton.onclick = function () {
+    // ЗАКРЫТИЕ МАРШРУТА
 
-      routeBox.style.display = "none";
+    closeRoute.addEventListener(
+      "click",
+      function () {
 
-      if (routeLine) {
-        map.removeLayer(routeLine);
-        routeLine = null;
+        routePanel.style.display =
+          "none";
+
+        if (routeLine) {
+
+          map.removeLayer(
+            routeLine
+          );
+
+          routeLine = null;
+
+        }
+
       }
-
-    };
+    );
 
   </script>
 
 </body>
-</html>
+</html>.addEventListener
