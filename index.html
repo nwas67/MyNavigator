@@ -2,14 +2,21 @@
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+<meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+>
 
 <title>My Navigator</title>
 
-<link rel="stylesheet"
-href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<link
+    rel="stylesheet"
+    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+/>
 
 <style>
+
 * {
     box-sizing: border-box;
     -webkit-tap-highlight-color: transparent;
@@ -22,65 +29,79 @@ body {
     width: 100%;
     height: 100%;
     overflow: hidden;
-    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display",
-                 "Segoe UI", sans-serif;
+
+    font-family:
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        sans-serif;
 }
 
-/* ГЛАВНОЕ — КАРТА */
+/* =========================
+   КАРТА
+========================= */
 
 #map {
-    position: fixed !important;
-    top: 0 !important;
-    left: 0 !important;
-    right: 0 !important;
-    bottom: 0 !important;
+    position: fixed;
 
-    width: 100vw !important;
-    height: 100vh !important;
+    top: 0;
+    left: 0;
 
-    z-index: 1 !important;
+    width: 100%;
+    height: 100%;
+
+    z-index: 1;
+
+    background: #e5e5e5;
 }
 
-/* Верхняя панель */
+/* =========================
+   ПОИСК
+========================= */
 
 .top-panel {
     position: fixed;
+
     top: 12px;
     left: 12px;
     right: 12px;
+
     z-index: 1000;
 }
 
 .search-container {
     display: flex;
     align-items: center;
+
     gap: 10px;
 
     padding: 6px 8px 6px 16px;
 
-    background: rgba(255,255,255,0.97);
+    background: rgba(255,255,255,0.96);
+
     border-radius: 18px;
 
-    box-shadow: 0 4px 20px rgba(0,0,0,0.18);
+    box-shadow:
+        0 4px 20px rgba(0,0,0,0.18);
 
     backdrop-filter: blur(15px);
 }
 
 .search-icon {
     font-size: 20px;
-    opacity: 0.65;
 }
 
 #search {
     flex: 1;
+
     min-width: 0;
 
-    border: 0;
+    border: none;
     outline: none;
+
     background: transparent;
 
     font-size: 17px;
-    color: #222;
 
     padding: 11px 0;
 }
@@ -95,40 +116,44 @@ body {
     width: 30px;
     height: 30px;
 
-    border: 0;
+    border: none;
+
     border-radius: 50%;
 
     background: #e8e8e8;
 
-    color: #555;
-    font-size: 17px;
+    font-size: 18px;
 }
 
-/* Результаты поиска */
+/* =========================
+   РЕЗУЛЬТАТЫ
+========================= */
 
 #results {
     margin-top: 8px;
 
-    background: rgba(255,255,255,0.98);
+    background: white;
 
     border-radius: 17px;
 
     overflow: hidden;
 
-    box-shadow: 0 4px 20px rgba(0,0,0,0.18);
+    box-shadow:
+        0 4px 20px rgba(0,0,0,0.18);
 }
 
 .result {
     display: flex;
     align-items: center;
+
     gap: 12px;
 
-    padding: 15px;
+    padding: 14px;
 
-    border-bottom: 1px solid #eeeeee;
+    border-bottom:
+        1px solid #eeeeee;
 
-    font-size: 15px;
-    line-height: 1.3;
+    font-size: 14px;
 
     cursor: pointer;
 }
@@ -138,54 +163,61 @@ body {
 }
 
 .result-icon {
-    width: 36px;
-    height: 36px;
+    width: 38px;
+    height: 38px;
 
     flex-shrink: 0;
-
-    border-radius: 50%;
-
-    background: #f0f0f0;
 
     display: flex;
     align-items: center;
     justify-content: center;
 
-    font-size: 17px;
+    border-radius: 50%;
+
+    background: #f1f1f1;
+
+    font-size: 18px;
 }
 
-/* Кнопки карты */
+/* =========================
+   КНОПКИ СПРАВА
+========================= */
 
 .map-buttons {
     position: fixed;
 
     right: 13px;
-    bottom: 185px;
+    bottom: 190px;
 
     z-index: 1000;
 
     display: flex;
     flex-direction: column;
+
     gap: 10px;
 }
 
 .map-button {
-    width: 50px;
-    height: 50px;
+    width: 52px;
+    height: 52px;
 
-    border: 0;
-    border-radius: 16px;
+    border: none;
+
+    border-radius: 17px;
 
     background: rgba(255,255,255,0.97);
 
-    box-shadow: 0 4px 15px rgba(0,0,0,0.18);
+    box-shadow:
+        0 4px 15px rgba(0,0,0,0.20);
 
     font-size: 22px;
 
     cursor: pointer;
 }
 
-/* Нижняя карточка */
+/* =========================
+   НИЖНЯЯ КАРТОЧКА
+========================= */
 
 .route-card {
     position: fixed;
@@ -196,13 +228,14 @@ body {
 
     z-index: 1000;
 
+    padding: 17px;
+
     background: rgba(255,255,255,0.97);
 
     border-radius: 24px;
 
-    padding: 17px;
-
-    box-shadow: 0 5px 25px rgba(0,0,0,0.22);
+    box-shadow:
+        0 5px 25px rgba(0,0,0,0.22);
 
     backdrop-filter: blur(15px);
 }
@@ -210,6 +243,7 @@ body {
 .route-top {
     display: flex;
     align-items: center;
+
     gap: 12px;
 }
 
@@ -217,31 +251,31 @@ body {
     width: 12px;
     height: 12px;
 
-    background: #222;
+    flex-shrink: 0;
 
     border-radius: 50%;
 
-    flex-shrink: 0;
-}
-
-.route-line {
-    width: 2px;
-    height: 16px;
-
-    background: #bbb;
-
-    margin-left: 5px;
+    background: #222;
 }
 
 .destination-dot {
     width: 12px;
     height: 12px;
 
-    background: #e53935;
+    flex-shrink: 0;
 
     border-radius: 50%;
 
-    flex-shrink: 0;
+    background: #e53935;
+}
+
+.route-line {
+    width: 2px;
+    height: 17px;
+
+    margin-left: 5px;
+
+    background: #bbb;
 }
 
 .route-text {
@@ -250,15 +284,22 @@ body {
 
 .route-title {
     font-size: 16px;
+
     font-weight: 700;
+
+    white-space: nowrap;
+
+    overflow: hidden;
+
+    text-overflow: ellipsis;
 }
 
 .route-subtitle {
+    margin-top: 3px;
+
     color: #777;
 
     font-size: 13px;
-
-    margin-top: 3px;
 }
 
 .route-button {
@@ -266,145 +307,32 @@ body {
 
     margin-top: 14px;
 
-    border: 0;
-    border-radius: 15px;
-
     padding: 15px;
 
+    border: none;
+
+    border-radius: 15px;
+
     background: #111;
+
     color: white;
 
     font-size: 17px;
+
     font-weight: 600;
 
     cursor: pointer;
 }
 
-.route-button:disabled {
-    opacity: 0.6;
-}
 
-.route-info {
-    display: none;
-
-    margin-top: 14px;
-    padding-top: 13px;
-
-    border-top: 1px solid #e5e5e5;
-}
-
-.route-time {
-    font-size: 22px;
-    font-weight: 700;
-}
-
-
-'&q=' +
-            encodeURIComponent(query);
-
-        const response =
-            await fetch(url);
-
-        const data =
-            await response.json();
-
-        results.innerHTML = '';
-
-        data.forEach(place => {
-
-            const item =
-                document.createElement('div');
-
-            item.className =
-                'result';
-
-            item.innerHTML = `
-                <div class="result-icon">📍</div>
-                <div>${place.display_name}</div>
-            `;
-
-            item.onclick =
-                function() {
-
-                    const lat =
-                        parseFloat(place.lat);
-
-                    const lon =
-                        parseFloat(place.lon);
-
-                    destination = {
-                        lat: lat,
-                        lon: lon,
-                        name: place.display_name
-                    };
-
-                    map.setView(
-                        [lat, lon],
-                        16
-                    );
-
-                    if (marker) {
-                        map.removeLayer(marker);
-                    }
-
-                    marker =
-                        L.marker([lat, lon])
-                        .addTo(map);
-
-                    searchInput.value =
-                        place.display_name;
-
-                    document
-                        .getElementById(
-                            'destinationTitle'
-                        )
-                        .textContent =
-                            place.display_name;
-
-                    document
-                        .getElementById(
-                            'routeButton'
-                        )
-                        .style.display =
-                            'block';
-
-                    results.innerHTML = '';
-
-                    /*
-                       На всякий случай
-                       обновляем карту
-                    */
-
-                    setTimeout(function() {
-                        map.invalidateSize(true);
-                    }, 100);
-
-                };
-
-            results.appendChild(item);
-
-        });
-
-    } catch (error) {
-
-        console.log(
-            'Ошибка поиска:',
-            error
-        );
-
-    }
-}
-
-/* =========================
-   ГЕОЛОКАЦИЯ
-========================= */
+================================== */
 
 function findLocation() {
 
     if (!navigator.geolocation) {
 
         alert(
-            'Геолокация не поддерживается'
+            "Геолокация не поддерживается"
         );
 
         return;
@@ -412,7 +340,7 @@ function findLocation() {
 
     navigator.geolocation.getCurrentPosition(
 
-        position => {
+        function(position) {
 
             const lat =
                 position.coords.latitude;
@@ -421,8 +349,11 @@ function findLocation() {
                 position.coords.longitude;
 
             currentLocation = {
+
                 lat: lat,
+
                 lon: lon
+
             };
 
             map.setView(
@@ -431,53 +362,65 @@ function findLocation() {
             );
 
             if (marker) {
-                map.removeLayer(marker);
+
+                map.removeLayer(
+                    marker
+                );
+
             }
 
             marker =
-                L.marker([lat, lon])
+                L.marker(
+                    [lat, lon]
+                )
                 .addTo(map)
                 .bindPopup(
-                    'Вы здесь'
+                    "Вы здесь"
                 )
                 .openPopup();
 
-            map.invalidateSize(true);
+            map.invalidateSize(
+                true
+            );
 
         },
 
-        () => {
+        function() {
 
             alert(
-                'Не удалось определить местоположение'
+                "Не удалось определить местоположение"
             );
 
         }
 
     );
+
 }
 
-/* =========================
-   МАРШРУТ
-========================= */
+/* =====================================================
+   ПОСТРОЕНИЕ МАРШРУТА
+===================================================== */
 
 async function buildRoute() {
 
     if (!destination) {
 
         alert(
-            'Сначала выберите место'
+            "Сначала выберите место"
         );
 
         return;
     }
+
+    /* Если местоположение
+       ещё неизвестно */
 
     if (!currentLocation) {
 
         if (!navigator.geolocation) {
 
             alert(
-                'Геолокация не поддерживается'
+                "Геолокация не поддерживается"
             );
 
             return;
@@ -485,7 +428,7 @@ async function buildRoute() {
 
         navigator.geolocation.getCurrentPosition(
 
-            position => {
+            function(position) {
 
                 currentLocation = {
 
@@ -501,15 +444,10 @@ async function buildRoute() {
 
             },
 
-            () => {
+            function() {
 
-                al
-Parking Page
-place.lat
-
-
-ert(
-                    'Разрешите доступ к геолокации'
+                alert(
+                    "Разрешите доступ к геолокации"
                 );
 
             }
@@ -519,26 +457,30 @@ ert(
         return;
     }
 
-    const button =
-        document.getElementById(
-            'routeButton'
-        );
+    routeButton.textContent =
+        "⏳ Строим маршрут...";
 
-    button.textContent =
-        '⏳ Строим маршрут...';
-
-    button.disabled = true;
+    routeButton.disabled =
+        true;
 
     try {
 
         const start =
-            `${currentLocation.lon},${currentLocation.lat}`;
+            currentLocation.lon +
+            "," +
+            currentLocation.lat;
 
         const end =
-            `${destination.lon},${destination.lat}`;
+            destination.lon +
+            "," +
+            destination.lat;
 
         const url =
-            `https://router.project-osrm.org/route/v1/driving/${start};${end}?overview=full&geometries=geojson`;
+            "https://router.project-osrm.org/route/v1/driving/" +
+            start +
+            ";" +
+            end +
+            "?overview=full&geometries=geojson";
 
         const response =
             await fetch(url);
@@ -548,11 +490,11 @@ ert(
 
         if (
             !data.routes ||
-            !data.routes.length
+            data.routes.length === 0
         ) {
 
             throw new Error(
-                'Маршрут не найден'
+                "Маршрут не найден"
             );
 
         }
@@ -572,146 +514,305 @@ ert(
             L.geoJSON(
                 route.geometry,
                 {
-                    weight: 6,
-                    opacity: 0.9
+                    style: {
+                        weight: 6,
+                        opacity: 0.9
+                    }
                 }
             ).addTo(map);
 
         map.fitBounds(
             routeLine.getBounds(),
             {
-                padding: [50, 220]
+                padding: [
+                    60,
+                    240
+                ]
             }
         );
+
+        /* Время */
 
         const minutes =
             Math.round(
                 route.duration / 60
             );
 
-        const km =
-            (
-                route.distance / 1000
-            ).toFixed(1);
+        let timeText;
 
-        document
-            .getElementById(
-                'routeTime'
-            )
-            .textContent =
-                minutes < 60
-                ? `${minutes} мин`
-                : `${Math.floor(minutes / 60)} ч ${minutes % 60} мин`;
+        if (minutes < 60) {
 
-        document
-            .getElementById(
-                'routeDistance'
-            )
-            .textContent =
-                `${km} км • на автомобиле`;
+            timeText =
+                minutes + " мин";
 
-        document
-            .getElementById(
-                'routeInfo'
-            )
-            .style.display =
-                'block';
+        } else {
 
-        button.textContent =
-            '🚗 Маршрут построен';
+            const hours =
+                Math.floor(
+                    minutes / 60
+                );
+
+            const mins =
+                minutes % 60;
+
+            timeText =
+                hours +
+                " ч " +
+
+
+==== */
+
+let marker = null;
+
+let currentLocation = null;
+
+let destination = null;
+
+let routeLine = null;
+
+let searchTimer = null;
+
+/* =====================================================
+   ЭЛЕМЕНТЫ
+===================================================== */
+
+const searchInput =
+    document.getElementById("search");
+
+const results =
+    document.getElementById("results");
+
+const clearButton =
+    document.getElementById("clearButton");
+
+const destinationTitle =
+    document.getElementById("destinationTitle");
+
+const routeButton =
+    document.getElementById("routeButton");
+
+const routeInfo =
+    document.getElementById("routeInfo");
+
+const routeTime =
+    document.getElementById("routeTime");
+
+const routeDistance =
+    document.getElementById("routeDistance");
+
+/* =====================================================
+   ПОИСК
+===================================================== */
+
+searchInput.addEventListener(
+    "input",
+    function() {
+
+        clearTimeout(searchTimer);
+
+        const query =
+            searchInput.value.trim();
+
+        clearButton.style.display =
+            query.length > 0
+            ? "block"
+            : "none";
+
+        if (query.length < 3) {
+
+            results.innerHTML = "";
+
+            return;
+        }
+
+        searchTimer =
+            setTimeout(
+                function() {
+                    searchPlace(query);
+                },
+                500
+            );
+
+    }
+);
+
+/* =====================================================
+   ПОИСК АДРЕСА
+===================================================== */
+
+async function searchPlace(query) {
+
+    try {
+
+        const url =
+            "https://nominatim.openstreetmap.org/search" +
+            "?format=json" +
+            "&limit=5" +
+            "&q=" +
+            encodeURIComponent(query);
+
+        const response =
+            await fetch(url);
+
+        const places =
+            await response.json();
+
+        results.innerHTML = "";
+
+        places.forEach(function(place) {
+
+            const item =
+                document.createElement("div");
+
+            item.className =
+                "result";
+
+            const icon =
+                document.createElement("div");
+
+            icon.className =
+                "result-icon";
+
+            icon.textContent =
+                "📍";
+
+            const text =
+                document.createElement("div");
+
+            text.textContent =
+                place.display_name;
+
+            item.appendChild(icon);
+
+            item.appendChild(text);
+
+            item.onclick =
+                function() {
+
+                    const lat =
+                        parseFloat(place.lat);
+
+                    const lon =
+                        parseFloat(place.lon);
+
+                    destination = {
+
+                        lat: lat,
+
+                        lon: lon,
+
+                        name:
+                            place.display_name
+
+                    };
+
+                    map.setView(
+                        [lat, lon],
+                        16
+                    );
+
+                    if (marker) {
+
+                        map.removeLayer(
+                            marker
+                        );
+
+                    }
+
+                    marker =
+                        L.marker(
+                            [lat, lon]
+                        ).addTo(map);
+
+                    searchInput.value =
+                        place.display_name;
+
+                    destinationTitle.textContent =
+                        place.display_name;
+
+                    routeButton.style.display =
+                        "block";
+
+                    results.innerHTML =
+                        "";
+
+                    map.invalidateSize(
+                        true
+                    );
+
+                };
+
+            results.appendChild(item);
+
+        });
 
     } catch (error) {
 
         console.log(
-            'Ошибка маршрута:',
+            "Ошибка поиска:",
             error
         );
 
-        alert(
-            'Не удалось построить маршрут'
-        );
-
-        button.textContent =
-            '🚗 Построить маршрут';
-
     }
 
-    button.disabled = false;
-
 }
 
-/* =========================
-   ОЧИСТИТЬ ПОИСК
-========================= */
+/* =====================================================
+   МОЁ МЕСТОПОЛОЖЕНИЕ
+===================
+Parking Page
+place.lat
 
-function clearSearch() {
 
-    searchInput.value = '';
-
-    results.innerHTML = '';
-
-    clearButton.style.display =
-        'none';
-
-    destination = null;
-
-    document
-        .getElementById(
-            'destinationTitle'
-        )
-        .textContent =
-            'Выберите место';
-
-    document
-        .getElementById(
-            'routeButton'
-        )
-        .style.display =
-            'none';
-
+-button:disabled {
+    opacity: 0.6;
 }
 
-/* =========================
-   СБРОС КАРТЫ
-========================= */
+.route-info {
+    display: none;
 
-function resetMap() {
+    margin-top: 14px;
 
-    map.setView(
-        [55.751244, 37.618423],
-        10
-    );
+    padding-top: 13px;
 
-    map.invalidateSize(true);
-
+    border-top:
+        1px solid #e5e5e5;
 }
 
-</script>
+.route-time {
+    font-size: 22px;
 
-</body>
-</html>.r
+    font-weight: 700;
+}
 
-
-oute-distance {
-    margin-top: 3px;
+.route-distance {
+    margin-top: 4px;
 
     color: #777;
 
     font-size: 14px;
 }
 
-.leaflet-control-attribution {
-    font-size: 9px;
-}
+/* =========================
+   LEAFLET
+========================= */
 
 .leaflet-control-zoom {
     display: none;
 }
 
+.leaflet-control-attribution {
+    font-size: 9px;
+}
+
+/* =========================
+   МОБИЛЬНЫЙ ЭКРАН
+========================= */
+
 max-height: 650px {
 
     .map-buttons {
-        bottom: 155px;
+        bottom: 160px;
     }
 
     .route-card {
@@ -723,22 +824,29 @@ max-height: 650px {
         padding: 12px;
     }
 }
+
 </style>
 </head>
 
 <body>
 
-<!-- КАРТА -->
+<!-- =========================
+     КАРТА
+========================= -->
 
 <div id="map"></div>
 
-<!-- ПОИСК -->
+<!-- =========================
+     ПОИСК
+========================= -->
 
 <div class="top-panel">
 
     <div class="search-container">
 
-        <span class="search-icon">🔎</span>
+        <span class="search-icon">
+            🔎
+        </span>
 
         <input
             id="search"
@@ -748,10 +856,12 @@ max-height: 650px {
         >
 
         <button
-            class="clear-button"
             id="clearButton"
+            class="clear-button"
             onclick="clearSearch()"
-        >×</button>
+        >
+            ×
+        </button>
 
     </div>
 
@@ -759,23 +869,31 @@ max-height: 650px {
 
 </div>
 
-<!-- КНОПКИ -->
+<!-- =========================
+     КНОПКИ
+========================= -->
 
 <div class="map-buttons">
 
     <button
         class="map-button"
         onclick="findLocation()"
-    >📍</button>
+    >
+        📍
+    </button>
 
     <button
         class="map-button"
         onclick="resetMap()"
-    >🧭</button>
+    >
+        🧭
+    </button>
 
 </div>
 
-<!-- МАРШРУТ -->
+<!-- =========================
+     НИЖНЯЯ КАРТОЧКА
+========================= -->
 
 <div class="route-card">
 
@@ -784,6 +902,7 @@ max-height: 650px {
         <div class="route-dot"></div>
 
         <div>
+
             <div class="route-title">
                 Моё местоположение
             </div>
@@ -791,6 +910,7 @@ max-height: 650px {
             <div class="route-subtitle">
                 Откуда
             </div>
+
         </div>
 
     </div>
@@ -804,8 +924,8 @@ max-height: 650px {
         <div class="route-text">
 
             <div
-                class="route-title"
                 id="destinationTitle"
+                class="route-title"
             >
                 Выберите место
             </div>
@@ -819,8 +939,8 @@ max-height: 650px {
     </div>
 
     <button
-        class="route-button"
         id="routeButton"
+        class="route-button"
         onclick="buildRoute()"
         style="display:none;"
     >
@@ -828,20 +948,20 @@ max-height: 650px {
     </button>
 
     <div
-        class="route-info"
         id="routeInfo"
+        class="route-info"
     >
 
         <div
-            class="route-time"
             id="routeTime"
+            class="route-time"
         >
             —
         </div>
 
         <div
-            class="route-distance"
             id="routeDistance"
+            class="route-distance"
         >
             —
         </div>
@@ -854,94 +974,43 @@ max-height: 650px {
 
 <script>
 
-/* =========================
-   КАРТА
-========================= */
+/* =====================================================
+   СОЗДАЁМ КАРТУ
+===================================================== */
 
-const map = L.map('map', {
+const map = L.map("map", {
     zoomControl: false
 }).setView(
     [55.751244, 37.618423],
     10
 );
 
+/* =====================================================
+   НОВЫЙ ИСТОЧНИК КАРТЫ
+===================================================== */
+
 L.tileLayer(
-    'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+    "https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}",
     {
         maxZoom: 19,
-        attribution: '&copy; OpenStreetMap contributors'
+
+        attribution:
+            "Tiles © Esri"
     }
 ).addTo(map);
 
-/*
-   ВАЖНО:
-   говорим Leaflet заново посчитать
-   размер карты после загрузки страницы
-*/
+/* =====================================================
+   ОБНОВЛЯЕМ РАЗМЕР
+===================================================== */
 
 setTimeout(function() {
     map.invalidateSize(true);
-}, 300);
+}, 500);
 
 setTimeout(function() {
     map.invalidateSize(true);
-}, 1000);
+}, 1500);
 
-let marker = null;
-let currentLocation = null;
-let destination = null;
-let routeLine = null;
-let searchTimer;
-
-/* =========================
-   ПОИСК
-========================= */
-
-const searchInput =
-    document.getElementById('search');
-
-const results =
-    document.getElementById('results');
-
-const clearButton =
-    document.getElementById('clearButton');
-
-searchInput.addEventListener(
-    'input',
-    function() {
-
-        clearTimeout(searchTimer);
-
-        const query =
-            this.value.trim();
-
-        clearButton.style.display =
-            query ? 'block' : 'none';
-
-        if (query.length < 3) {
-
-            results.innerHTML = '';
-
-            return;
-        }
-
-        searchTimer =
-            setTimeout(
-                () => searchPlace(query),
-                500
-            );
-    }
-);
-
-/* =========================
-   ПОИСК МЕСТА
-========================= */
-
-async function searchPlace(query) {
-
-    try {
-
-        const url =
-            'https://nominatim.openstreetmap.org/search' +
-            '?format=json' +
-            '&limit=5' +
+/* =====================================================
+   ПЕРЕМЕННЫЕ
+=================================================
