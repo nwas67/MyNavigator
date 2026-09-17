@@ -3,7 +3,6 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
     <title>My Navigator</title>
 
     <link
@@ -16,22 +15,29 @@
             box-sizing: border-box;
         }
 
-        html, body {
+        html,
+        body {
             margin: 0;
             padding: 0;
             width: 100%;
             height: 100%;
             overflow: hidden;
             font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display",
-                         "SF Pro Text", Arial, sans-serif;
+                "SF Pro Text", Arial, sans-serif;
         }
+
+        /* КАРТА */
 
         #map {
+            position: absolute;
+            top: 0;
+            left: 0;
             width: 100%;
             height: 100%;
+            z-index: 1;
         }
 
-        /* Верхняя панель */
+        /* ВЕРХНИЙ ПОИСК */
 
         .top-panel {
             position: absolute;
@@ -47,15 +53,14 @@
             align-items: center;
             padding: 0 18px;
 
-            background: rgba(255, 255, 255, 0.94);
+            background: rgba(255, 255, 255, 0.96);
             border-radius: 20px;
 
-            box-shadow:
-                0 4px 18px rgba(0, 0, 0, 0.18);
+            box-shadow: 0 4px 18px rgba(0, 0, 0, 0.18);
         }
 
         .search-icon {
-            font-size: 23px;
+            font-size: 22px;
             margin-right: 12px;
         }
 
@@ -64,17 +69,17 @@
             color: #777;
         }
 
-        /* Кнопка геолокации */
+        /* КНОПКА ГЕОЛОКАЦИИ */
 
         #locationBtn {
             position: absolute;
-            z-index: 1000;
-
             right: 18px;
             bottom: 135px;
 
             width: 56px;
             height: 56px;
+
+            z-index: 1000;
 
             border: none;
             border-radius: 50%;
@@ -83,8 +88,7 @@
 
             font-size: 25px;
 
-            box-shadow:
-                0 4px 15px rgba(0, 0, 0, 0.22);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.22);
 
             cursor: pointer;
         }
@@ -93,7 +97,7 @@
             transform: scale(0.94);
         }
 
-        /* Нижняя панель */
+        /* НИЖНЯЯ ПАНЕЛЬ */
 
         .bottom-panel {
             position: absolute;
@@ -104,13 +108,11 @@
             z-index: 1000;
 
             background: rgba(255, 255, 255, 0.96);
-
             border-radius: 24px;
 
             padding: 15px;
 
-            box-shadow:
-                0 5px 25px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 5px 25px rgba(0, 0, 0, 0.2);
         }
 
         .panel-title {
@@ -126,7 +128,6 @@
 
         .quick-button {
             flex: 1;
-
             height: 55px;
 
             border: none;
@@ -144,7 +145,7 @@
             transform: scale(0.97);
         }
 
-        /* Убираем стандартные кнопки Leaflet */
+        /* УБИРАЕМ ZOOM LEAFLET */
 
         .leaflet-control-zoom {
             display: none;
@@ -158,136 +159,146 @@
 
 <body>
 
-<div id="map"></div>
+    <!-- КАРТА -->
 
-<!-- Верх -->
+    <div id="map"></div>
 
-<div class="top-panel">
-    <div class="search-box">
-        <div class="search-icon">🔍</div>
-        <div class="search-text">Куда едем?</div>
-    </div>
-</div>
+    <!-- ПОИСК -->
 
-<!-- Геолокация -->
-
-<button id="locationBtn">📍</button>
-
-<!-- Низ -->
-
-<div class="bottom-panel">
-
-    <div class="panel-title">
-        Быстрый доступ
+    <div class="top-panel">
+        <div class="search-box">
+            <div class="search-icon">🔍</div>
+            <div class="search-text">Куда едем?</div>
+        </div>
     </div>
 
-    <div class="quick-buttons">
+    <!-- ГЕОЛОКАЦИЯ -->
 
-        <button class="quick-button">
-            🏠<br
-          Дом
-        </button>
+    <button id="locationBtn">📍</button>
 
-        <button class="quick-button">
-            ⭐<br
-          Избранное
-        </button>
+    <!-- НИЖНЯЯ ПАНЕЛЬ -->
 
-        <button class="quick-button">
-            🕘
+    <div class="bottom-panel">
 
-         История
-        </button>
+        <div class="panel-title">
+            Быстрый доступ
+        </div>
+
+        <div class="quick-buttons">
+
+            <button class="quick-button">
+                🏠<br
+              Дом
+            </button>
+
+            <button class="quick-button">
+                ⭐<br
+              Избранное
+            </button>
+
+            <button class="quick-button">
+                🕘
+
+             История
+            </button>
+
+        </div>
 
     </div>
 
-</div>
+    <!-- LEAFLET -->
 
-<script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js"></script>
-
-<script>
-
-    /* Создаём карту */
-
-    const map = L.map('map').setView(
-        [55.751244, 37.618423],
-        10
-    );
-
-    /* Загружаем карту */
-
-    L.tileLayer(
+    <script src="https://cdn.jsdelivr
 
 
-tps://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-        {
-            maxZoom: 19,
-            attribution: '&copy; OpenStreetMap contributors'
-        }
-    ).addTo(map);
+et/npm/leaflet@1.9.4/dist/leaflet.js"></script>
 
-    /* Геолокация */
+    <script>
 
-    let userMarker = null;
+        /* СОЗДАЁМ КАРТУ */
 
-    document
-        .getElementById('locationBtn')
-        .addEventListener('click', function () {
+        const map = L.map("map").setView(
+            [55.751244, 37.618423],
+            10
+        );
 
-            if (!navigator.geolocation) {
-                alert('Геолокация не поддерживается');
-                return;
+        /* КАРТА OPENSTREETMAP */
+
+        L.tileLayer(
+            "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+            {
+                maxZoom: 19,
+                attribution: "&copy; OpenStreetMap contributors"
             }
+        ).addTo(map);
 
-            navigator.geolocation.getCurrentPosition(
+        /* ГЕОЛОКАЦИЯ */
 
-                function (position) {
+        let userMarker = null;
 
-                    const lat =
-                        position.coords.latitude;
+        document
+            .getElementById("locationBtn")
+            .addEventListener("click", function () {
 
-                    const lon =
-                        position.coords.longitude;
+                if (!navigator.geolocation) {
+                    alert("Геолокация не поддерживается");
+                    return;
+                }
 
-                    if (userMarker) {
+                navigator.geolocation.getCurrentPosition(
 
-                        userMarker.setLatLng([
-                            lat,
-                            lon
-                        ]);
+                    function (position) {
 
-                    } else {
+                        const lat =
+                            position.coords.latitude;
 
-                        userMarker =
-                            L.marker([
+                        const lon =
+                            position.coords.longitude;
+
+                        if (userMarker) {
+
+                            userMarker.setLatLng([
+                                lat,
+                                lon
+                            ]);
+
+                        } else {
+
+                            userMarker = L.marker([
                                 lat,
                                 lon
                             ]).addTo(map);
 
-                        userMarker
-                            .bindPopup('Вы здесь')
-                            .openPopup();
+                            userMarker
+                                .bindPopup("Вы здесь")
+                                .openPopup();
+                        }
+
+                        map.setView(
+                            [lat, lon],
+                            16
+                        );
+                    },
+
+                    function () {
+
+                        alert(
+                            "Не удалось определить местоположение"
+                        );
+
                     }
 
-                    map.setView(
-                        [lat, lon],
-                        16
-                    );
-                },
+                );
 
-                function () {
+            });
 
-                    alert(
-                        'Не удалось определить местоположение'
-                    );
+        /* ПЕРЕСЧИТЫВАЕМ РАЗМЕР КАРТЫ */
 
-                }
+        setTimeout(function () {
+            map.invalidateSize();
+        }, 500);
 
-            );
-
-        });
-
-</script>
+    </script>
 
 </body>
-</html>'ht
+</html>.n
