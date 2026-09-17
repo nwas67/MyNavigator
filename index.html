@@ -12,8 +12,7 @@
 />
 
 <style>
-html,
-body {
+html, body {
     margin: 0;
     padding: 0;
     width: 100%;
@@ -25,124 +24,91 @@ body {
     height: 100%;
 }
 
-/* ПОИСК */
-
+/* Поиск */
 .search-box {
     position: fixed;
     top: 15px;
     left: 15px;
     right: 15px;
-
-    height: 55px;
-
-    background: white;
-    border-radius: 18px;
-
     z-index: 1000;
-
-    display: flex;
-    align-items: center;
-
-    padding: 0 18px;
-
-    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-}
-
-.search-icon {
-    font-size: 21px;
-    margin-right: 10px;
 }
 
 #search {
     width: 100%;
-    height: 100%;
-
+    box-sizing: border-box;
+    padding: 16px 18px;
     border: none;
-    outline: none;
-
+    border-radius: 18px;
+    background: white;
     font-size: 17px;
+    outline: none;
+    box-shadow: 0 4px 18px rgba(0,0,0,0.20);
 }
 
-/* РЕЗУЛЬТАТЫ */
-
+/* Результаты */
 #results {
     position: fixed;
-
-    top: 78px;
+    top: 75px;
     left: 15px;
     right: 15px;
-
-    z-index: 1001;
-
-    background: white;
-
-    border-radius: 18px;
-
-    overflow: hidden;
-
-    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    z-index: 1000;
 }
 
 .result {
-    padding: 15px;
-
-    border-bottom: 1px solid #eeeeee;
-
+    padding: 14px 16px;
+    margin-bottom: 7px;
+    background: white;
+    border-radius: 14px;
+    box-shadow: 0 3px 12px rgba(0,0,0,0.15);
     font-size: 15px;
-
-    cursor: pointer;
 }
 
-.result:last-child {
-    border-bottom: none;
+/* Кнопка местоположения */
+.location-button {
+    position: fixed;
+    right: 15px;
+    bottom: 25px;
+    z-index: 1000;
+
+    width: 55px;
+    height: 55px;
+
+    border: none;
+    border-radius: 18px;
+
+    background: white;
+    font-size: 25px;
+
+    box-shadow: 0 4px 15px rgba(0,0,0,0.25);
 }
 
-.result:active {
-    background: #eeeeee;
+.location-button:active {
+    transform: scale(0.94);
 }
 </style>
 </head>
 
-<button
-    style="
-        position: fixed;
-        right: 15px;
-        bottom: 25px;
-        z-index: 1000;
-        width: 55px;
-        height: 55px;
-        border: none;
-        border-radius: 18px;
-        background: white;
-        font-size: 25px;
-        box-shadow: 0 4px 15px rgba(0,0,0,0.25);
-    "
->
-    📍
-</button><body>
-
-<!-- КАРТА -->
+<body>
 
 <div id="map"></div>
 
-<!-- ПОИСК -->
-
 <div class="search-box">
-
-    <div class="search-icon">🔎</div>
-
     <input
         id="search"
         type="text"
         placeholder="Куда едем?"
         autocomplete="off"
     >
-
 </div>
 
-<!-- РЕЗУЛЬТАТЫ -->
-
 <div id="results"></div>
+
+<button
+    id="locationButton"
+    class="location-button"
+>
+    📍
+</button>
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
@@ -161,151 +127,181 @@ L.tileLayer(
     "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
     {
         maxZoom: 19,
-        attribution:
-            "&copy; OpenStreetMap contributors"
+        attribution: "&copy; OpenStreetMap contributors"
     }
 ).addTo(map);
-
-/* =========================
-   ЭЛЕМЕНТЫ
-========================= */
-
-const search =
-    document.getElementById("search");
-
-const results =
-    document.getElementById("results");
-
-let marker = null;
-
-let timer = null;
 
 /* =========================
    ПОИСК
 ========================= */
 
-search.addEventListener(
-    "input",
-    function() {
+const search = document.getElementById("search");
+const results = document.getElementById("results");
 
-        clearTimeout(timer);
+let marker = null;
+let timer = null;
 
-        const query =
-            search.value.trim();
+search.addEventListener("input", function () {
 
+    clearTimeout(timer);
+
+    const query = search.value.trim();
+
+    if (query.length < 3) {
         results.innerHTML = "";
+        return;
+    }
 
-        if (query.length < 3) {
+    timer = setTimeout(async function () {
+
+        try {
+
+            const url =
+                "https://nominatim.openstreetmap.org/search" +
+                "?format=json" +
+                "&limit=5" +
+                "&addressdetails=1" +
+                "&q=" +
+                encodeURIComponent(query);
+
+            const response = await fetch(url);
+
+            const data = await response.json();
+
+            results.innerHTML = "";
+
+            data.forEach(function (place) {
+
+                const item = document.createElement("div");
+
+                item.className = "result";
+
+                item.textContent = place.display_name;
+
+                item.addEventListener("click", function () {
+
+                    const lat = Number(place.lat);
+                    const lon = Number(place.lon);
+
+                    map.setView(
+                        [lat, lon],
+                        15
+                    );
+
+                    if (marker) {
+                        map.removeLayer(marker);
+                    }
+
+                    marker = L.marker(
+                        [lat, lon]
+                    ).addTo(map);
+
+                    marker.bindPopup(
+                        place.display_name
+                    ).openPopup();
+
+                    search.value = place.display_name;
+
+                    results.innerHTML = "";
+                });
+
+                results.appendChild(item);
+
+            });
+
+        } catch (error) {
+
+            console.log(
+                "Ошибка поиска:",
+                error
+            );
+
+        }
+
+    }, 500);
+
+});
+
+/
+
+
+=========================
+   ГЕОЛОКАЦИЯ
+========================= */
+
+const locationButton =
+    document.getElementById("locationButton");
+
+locationButton.addEventListener(
+    "click",
+    function () {
+
+        if (!navigator.geolocation) {
+
+            alert(
+                "Твой браузер не поддерживает геолокацию."
+            );
+
             return;
         }
 
-        timer = setTimeout(
-            function() {
-                findPlaces(query);
+        locationButton.textContent = "⏳";
+
+        navigator.geolocation.getCurrentPosition(
+
+            function (position) {
+
+                const lat =
+                    position.coords.latitude;
+
+                const lon =
+                    position.coords.longitude;
+
+                map.setView(
+                    [lat, lon],
+                    16
+                );
+
+                if (marker) {
+                    map.removeLayer(marker);
+                }
+
+                marker = L.marker(
+                    [lat, lon]
+                ).addTo(map);
+
+                marker.bindPopup(
+                    "📍 Вы здесь"
+                ).openPopup();
+
+                locationButton.textContent = "📍";
             },
-            600
+
+            function (error) {
+
+                locationButton.textContent = "📍";
+
+                alert(
+                    "Не удалось определить местоположение. Разреши доступ к геолокации для сайта."
+                );
+
+                console.log(
+                    "Ошибка геолокации:",
+                    error
+                );
+            },
+
+            {
+                enableHighAccuracy: true,
+                timeout: 10000,
+                maximumAge: 0
+            }
         );
 
     }
 );
 
-/* =========================
-   NOMINATIM
-========================= */
-
-async function findPlaces(query) {
-
-    results.innerHTML =
-        '<div class="result">Ищем...</div>';
-
-    try {
-
-        const url =
-            "https://nominatim.openstreetmap.org/search" +
-            "?format=json" +
-            "&limit=5" +
-            "&accept-language=ru" +
-            "&q=" +
-            encodeURIComponent(query);
-
-        const response =
-            await fetch(url);
-
-        const places =
-            await response.json();
-
-        results.innerHTML = "";
-
-        if (places.length === 0) {
-
-            results.innerHTML =
-                '<div class="result">Ничего не найдено</div>';
-
-            return;
-        }
-
-        places.forEach(
-            function(place) {
-
-                const item =
-                    document.createElement("div");
-
-                item.className = "result";
-
-                item.textContent =
-                    place.display_name;
-
-                item.onclick =
-                    function() {
-
-                        const lat =
-                            Number(place.lat);
-
-                        const lon =
-                            Number(place.lon);
-
-                        map.setView(
-                            [lat, lon],
-                            16
-                        );
-
-                        if (marker) {
-
-
-map.removeLayer(marker);
-                        }
-
-                        marker =
-                            L.marker([lat, lon])
-                            .addTo(map)
-                            .bindPopup(
-                                place.display_name
-                            )
-                            .openPopup();
-
-                        results.innerHTML = "";
-
-                    };
-
-                results.appendChild(item);
-
-            }
-        );
-
-    }
-
-    catch (error) {
-
-        console.error(error);
-
-        results.innerHTML =
-            '<div class="result">Ошибка поиска</div>';
-
-    }
-
-}
-
 </script>
 
 </body>
-</html>
+</html>*
