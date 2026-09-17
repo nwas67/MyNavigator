@@ -24,12 +24,61 @@ body {
     width: 100%;
     height: 100%;
 }
+
+/* Поисковая панель */
+.search-box {
+    position: fixed;
+    top: 15px;
+    left: 15px;
+    right: 15px;
+
+    height: 55px;
+
+    background: white;
+    border-radius: 18px;
+
+    z-index: 1000;
+
+    display: flex;
+    align-items: center;
+
+    padding: 0 18px;
+
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+}
+
+.search-icon {
+    font-size: 21px;
+    margin-right: 10px;
+}
+
+#search {
+    width: 100%;
+    height: 100%;
+
+    border: none;
+    outline: none;
+
+    font-size: 17px;
+}
 </style>
 </head>
 
 <body>
 
 <div id="map"></div>
+
+<div class="search-box">
+
+    <div class="search-icon">🔎</div>
+
+    <input
+        id="search"
+        type="text"
+        placeholder="Куда едем?"
+    >
+
+</div>
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
