@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    >
+
+    <meta name="theme-color" content="#111111">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+    <title>My Navigator</title>
+
+    <link rel="manifest" href="manifest.json">
+
+    <link
+        rel="stylesheet"
+        href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    >
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<div id="app">
+
+    <div id="map"></div>
+
+    <div class="top-panel">
+
+        <div class="search-box">
+            <input
+                id="destination"
+                type="text"
+                placeholder="Куда едем?"
+                autocomplete="off"
+            >
+
+            <button id="searchButton">🔍</button>
+        </div>
+
+        <div id="searchResults"></div>
+
+    </div>
+
+    <div class="bottom-panel">
+
+        <div id="routeInfo" class="route-info hidden">
+
+            <div>
+                <span class="route-label">Расстояние</span>
+                <strong id="distance">—</strong>
+            </div>
+
+            <div>
+                <span class="route-label">Время</span>
+                <strong id="duration">—</strong>
+            </div>
+
+            <button id="clearRoute">✕</button>
+
+        </div>
+
+        <button id="locationButton" class="location-button">
+            📍
+            <span>Моё местоположение</span>
+        </button>
+
+    </div>
+
+</div>
+
+<script
+    src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js">
+</script>
+
+<script src="app.js"></script>
+
+</body>
+</html>
