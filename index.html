@@ -1,444 +1,197 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Navigator</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>My Navigator</title>
 
-    <link
-        rel="stylesheet"
-        href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css"
-    >
+<link rel="stylesheet"
+href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css">
 
-    <style>
-        * {
-            box-sizing: border-box;
-        }
+<style>
+html, body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+}
 
-        html, body {
-            margin: 0;
-            padding: 0;
-            width: 100%;
-            height: 100%;
-            overflow: hidden;
-            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", Arial, sans-serif;
-        }
+#map {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+}
 
-        #map {
-            width: 100%;
-            height: 100%;
-        }
+.search-box {
+    position: fixed;
+    top: 20px;
+    left: 15px;
+    right: 15px;
+    z-index: 9999;
+}
 
-        /* Верхняя панель */
+#search {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 16px 20px;
+    border: none;
+    border-radius: 18px;
+    font-size: 18px;
+    background: white;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    outline: none;
+}
 
-        .top-panel {
-            position: fixed;
-            top: 18px;
-            left: 15px;
-            right: 15px;
-            z-index: 9999;
-        }
+#results {
+    margin-top: 8px;
+    background: white;
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+}
 
-        .search-box {
-            height: 58px;
-            display: flex;
-            align-items: center;
-            padding: 0 18px;
-            background: rgba(255, 255, 255, 0.97);
-            border-radius: 20px;
-            box-shadow: 0 4px 18px rgba(0, 0, 0, 0.18);
-            cursor: pointer;
-        }
+.result {
+    padding: 14px;
+    border-bottom: 1px solid #ddd;
+    font-size: 15px;
+}
 
-        .search-icon {
-            font-size: 22px;
-            margin-right: 12px;
-        }
+.result:last-child {
+    border-bottom: none;
+}
 
-        .search-input {
-            width: 100%;
-            border: none;
-            outline: none;
-            background: transparent;
-            font-size: 18px;
-            color: #222;
-        }
-
-        .search-input::placeholder {
-            color: #777;
-        }
-
-        /* Результаты */
-
-        .results {
-            margin-top: 8px;
-            background: rgba(255, 255, 255, 0.98);
-            border-radius: 18px;
-            overflow: hidden;
-            box-shadow: 0 4px 18px rgba(0, 0, 0, 0.18);
-            display: none;
-        }
-
-        .result {
-            padding: 14px 16px;
-            border-bottom: 1px solid #eee;
-            font-size: 15px;
-            cursor: pointer;
-        }
-
-        .result:last-child {
-            border-bottom: none;
-        }
-
-        .result:active {
-            background: #f1f1f1;
-        }
-
-        .result-title {
-            font-weight: 600;
-            margin-bottom: 4px;
-        }
-
-        .result-address {
-            color: #777;
-            font-size: 13px;
-        }
-
-        /* Геолокация */
-
-        #locationBtn {
-            position: fixed;
-            right: 18px;
-            bottom: 140px;
-            z-index: 9999;
-
-            width: 56px;
-            height: 56px;
-
-            border: 0;
-            border-radius: 50%;
-            background: white;
-
-            font-size: 25px;
-
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.22);
-        }
-
-        /* Нижняя панель */
-
-        .bottom-panel {
-            position: fixed;
-            left: 12px;
-            right: 12px;
-            bottom: 12px;
-            z-index: 9999;
-
-            background: rgba(255, 255, 255, 0.96);
-            border-radius: 24px;
-            padding: 15px;
-
-            box-shadow: 0 5px 25px rgba(0, 0, 0, 0.2);
-        }
-
-        .panel-title {
-            font-size: 17px;
-            font-weight: 600;
-            margin-bottom: 12px;
-        }
-
-        .quick-buttons {
-            display: flex;
-            gap: 10px;
-        }
-
-        .quick-button {
-            flex: 1;
-            height: 55px;
-
-            border: 0;
-            border-radius: 17px;
-            background: #f2f2f2;
-
-            font-size: 15px;
-        }
-
-        .leaflet-control-zoom {
-            display: none;
-        }
-    </style>
+.location-button {
+    position: fixed;
+    right: 15px;
+    bottom: 120px;
+    z-index: 9999;
+    width: 55px;
+    height: 55px;
+    border: none;
+    border-radius: 50%;
+    background: white;
+    font-size: 25px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.25);
+}
+</style>
 </head>
 
 <body>
 
-    <div id="map"></div>
+<div id="map"></div>
 
-    <!-- ПОИСК -->
+<div class="search-box">
+    <input id="search" type="text" placeholder="Куда едем?">
+    <div id="results"></div>
+</div>
 
-    <div class="top-panel">
+<button class="location-button" onclick="findLocation()">📍</button>
 
-        <div class="search-box">
-            <div class="search-icon">🔍</div>
+<script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js"></script>
 
-            <input
-                id="searchInput"
-                class="search-input"
-                type="text"
-                placeholder="Куда едем?"
-                autocomplete="off"
-            >
-        </div>
+<script>
+const map = L.map('map').setView([55.751244, 37.618423], 10);
 
-        <div id="results" class="results"></div>
+L.tileLayer(
+    'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+    {
+        maxZoom: 19,
+        attribution: '&copy; OpenStreetMap contributors'
+    }
+).addTo(map);
 
-    </div>
+let marker = null;
 
-    <!-- ГЕОЛОКАЦИЯ -->
+const searchInput = document.getElementById('search');
+const results = document.getElementById('results');
 
-    <button
+let timer;
 
+searchInput.addEventListener('input', function() {
+    clearTimeout(timer);
 
+    const query = this.value.trim();
+
+    if (query.length < 3) {
+        results.innerHTML = '';
+        return;
+    }
+
+    timer = setTimeout(() => searchPlace(query), 500);
 });
 
-                    results.style.display =
-                        "block";
+async function searchPlace(query) {
+    try {
+        const url =
+            'https://nominatim.openstreetmap.org/search' +
+            '?format=json&limit=5&q=' +
+            encodeURIComponent(query);
 
-                })
+        const response = await fetch(url);
+        const data = await response.json();
 
-                .catch(function () {
+        results.innerHTML = '';
 
-                    results.innerHTML =
-                        '<div class="result">Ошибка поиска</div>';
+        data.forEach(place => {
+            const item = document.createElement('div');
 
-                    results.style.display =
-                        "block";
+            item.className = 'result';
+            item.textContent = place.display_name;
 
-                });
+            item.onclick = function() {
+                const lat = parseFloat(place.lat);
+                const lon = parseFloat(place.lon);
 
-            }, 500);
+                map.setView([lat, lon], 16);
 
-        });
-
-        /* ГЕОЛОКАЦИЯ */
-
-        let userMarker = null;
-
-        document
-            .getElementById("locationBtn")
-            .addEventListener("click", function () {
-
-                if (!navigator.geolocation) {
-                    alert("Геолокация не поддерживается");
-                    return;
+                if (marker) {
+                    map.removeLayer(marker);
                 }
 
-                navigator.geolocation.getCurrentPosition(
+                marker = L.marker([lat, lon]).addTo(map);
 
-                    function (position) {
+                searchInput.value = place.display_name;
+                results.innerHTML = '';
+            };
 
-                        const lat =
-                            position.coords.latitude;
+            results.appendChild(item);
+        });
 
-                        const lon =
-                            position.coords.longitude;
+    } catch (error) {
+        console.log(error);
+    }
+}
 
-                        if (userMarker) {
+function findLocation() {
+    if (!navigator.geolocation) {
+        alert('Геолокация не поддерживается');
+        return;
+    }
 
-                            userMarker.setLatLng([
-                                lat,
-                                lon
-                            ]);
+    navigator.geolocation.getCurrentPosition(
+        position => {
+            const lat = position.coords.latitude;
+            const lon = position.coords.longitude;
 
-                        } else {
+            map.setView([lat, lon], 16);
 
-                            userMarker =
-                                L.marker([
-                                    lat,
-                                    lon
-                                ])
-                                .addTo(map)
-                                .bindPopup("Вы здесь")
-                                .openPopup();
-                        }
+            if (marker) {
+                map.removeLayer(marker);
+            }
 
-                        map.setView(
-                            [lat, lon],
-                            16
-                        );
-
-                    },
-
-                    function () {
-                        alert(
-                            "Не удалось определить местоположение"
-                        );
-                    }
-
-                );
-
-            });
-
-        setTimeout(function () {
-            map.invalidateSize();
-        }, 1000);
-
-    </script>
+            marker = L.marker([lat, lon])
+                .addTo(map)
+                .bindPopup('Вы здесь')
+                .openPopup();
+        },
+        () => {
+            alert('Не удалось определить местоположение');
+        }
+    );
+}
+</script>
 
 </body>
 </html>
-
-
-id="locationBtn">📍</button>
-
-    <!-- НИЖНЯЯ ПАНЕЛЬ -->
-
-    <div class="bottom-panel">
-
-        <div class="panel-title">
-            Быстрый доступ
-        </div>
-
-        <div class="quick-buttons">
-
-            <button class="quick-button">
-                🏠<br
-
-            </button>
-
-            <button class="quick-button">
-                ⭐<br
-ранное
-            </button>
-
-            <button class="quick-button">
-                🕘
-
-рия
-            </button>
-
-        </div>
-
-    </div>
-
-    <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js"></script>
-
-    <script>
-
-        /* КАРТА */
-
-        const map = L.map("map").setView(
-            [55.751244, 37.618423],
-            10
-        );
-
-        L.tileLayer(
-            "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
-            {
-                maxZoom: 19,
-                attribution: "&copy; OpenStreetMap contributors"
-            }
-        ).addTo(map);
-
-        /* ПОИСК */
-
-        const searchInput =
-            document.getElementById("searchInput");
-
-        const results =
-            document.getElementById("results");
-
-        let searchTimer = null;
-
-        searchInput.addEventListener("input", function () {
-
-            const query =
-                searchInput.value.trim();
-
-            clearTimeout(searchTimer);
-
-            if (query.length < 3) {
-                results.style.display = "none";
-                results.innerHTML = "";
-                return;
-            }
-
-            searchTimer = setTimeout(function () {
-
-                fetch(
-                    "https://nominatim.openstreetmap.org/search?format=json&limit=5&addressdetails=1&q=" +
-                    encodeURIComponent(query)
-                )
-
-                .then(function (response) {
-                    return response.json();
-                })
-
-                .then(function (data) {
-
-                    results.innerHTML = "";
-
-                    if (data.length === 0) {
-
-                        results.innerHTML =
-                            '<div class="result">Ничего не найдено</div>';
-
-                        results.style.display = "block";
-                        return;
-                    }
-
-                    data.forEach(function (place) {
-
-                        const item =
-                            document.createElement("div");
-
-                        item.className = "result";
-
-                        const title =
-                            document.createElement("div");
-
-                        title.className = "result-title";
-
-                        title.textContent =
-                            place.display_name.split(",")[0];
-
-                        const address =
-                            document.createElement("div");
-
-                        address.className = "result-address";
-
-                        address.textContent =
-                            place.display_name;
-
-                        item.appendChild(title);
-                        item.appendChild(address);
-
-                        item.addEventListener("click", function () {
-
-                            const lat =
-                                parseFloat(place.lat);
-
-                            const lon =
-                                parseFloat(place.lon);
-
-                            map.setView(
-                                [lat, lon],
-                                16
-                            );
-
-                            L.marker([
-                                lat,
-                                lon
-                            ])
-                            .addTo(map)
-                            .bindPopup(
-                                place.display_name
-                            )
-                            .openPopup();
-
-                            searchInput.value =
-                                place.display_name;
-
-                            results.style.display =
-                                "none";
-                        });
-
-                        results.appendChild(item);
