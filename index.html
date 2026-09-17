@@ -6,10 +6,8 @@
 
 <title>My Navigator</title>
 
-<link
-rel="stylesheet"
-href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-/>
+<link rel="stylesheet"
+href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 
 <style>
 html, body {
@@ -59,6 +57,7 @@ html, body {
     border-radius: 14px;
     box-shadow: 0 3px 12px rgba(0,0,0,0.15);
     font-size: 15px;
+    cursor: pointer;
 }
 
 .location-button {
@@ -82,23 +81,27 @@ html, body {
 <div id="map"></div>
 
 <div class="search-box">
-<input
-id="search"
-type="text"
-placeholder="Куда едем?"
-autocomplete="off"
->
+    <input
+        id="search"
+        type="text"
+        placeholder="Куда едем?"
+        autocomplete="off"
+    >
 </div>
 
 <div id="results"></div>
 
-<button class="location-button">
-📍
+<button
+    id="locationButton"
+    class="location-button"
+>
+    📍
 </button>
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
 <script>
+
 const map = L.map("map").setView(
     [55.751244, 37.618423],
     10
@@ -114,9 +117,13 @@ L.tileLayer(
 
 const search = document.getElementById("search");
 const results = document.getElementById("results");
+const locationButton =
+    document.getElementById("locationButton");
 
 let marker = null;
 let timer = null;
+
+/* ПОИСК */
 
 search.addEventListener("input", function() {
 
@@ -134,8 +141,11 @@ search.addEventListener("input", function() {
         try {
 
             const response = await fetch(
-                "https://nominatim.openstreetmap.org/search?format=json&limit=5&q="
-                + encodeURIComponent(query)
+                "https://nominatim.openstreetmap.org/search" +
+                "?format=json" +
+                "&limit=5" +
+                "&q=" +
+                encodeURIComponent(query)
             );
 
             const data = await response.json();
@@ -144,7 +154,8 @@ search.addEventListener("input", function() {
 
             data.forEach(function(place) {
 
-                const item = document.createElement("div");
+                const item =
+                    document.createElement("div");
 
                 item.className = "result";
 
@@ -170,9 +181,15 @@ search.addEventListener("input", function() {
                             map.removeLayer(marker);
                         }
 
-                        marker = L.marker(
-                            [lat, lon]
-                        ).addTo(map);
+                        marker =
+                            L.marker([lat, lon])
+                            .addTo(map);
+
+                        marker
+                            .bindPopup(
+                                place.display_name
+                            )
+                            .openPopup();
 
                         search.value =
                             place.display_name;
@@ -182,18 +199,91 @@ search.addEventListener("input", function() {
                 );
 
                 results.appendChild(item);
-
             });
 
         } catch (error) {
 
-            console.log(error);
+            console
+
+
+log(error);
 
         }
 
     }, 500);
 });
+
+/* 📍 МОЁ МЕСТОПОЛОЖЕНИЕ */
+
+locationButton.addEventListener(
+    "click",
+    function() {
+
+        if (!navigator.geolocation) {
+
+            alert(
+                "Геолокация не поддерживается."
+            );
+
+            return;
+        }
+
+        locationButton.textContent = "⏳";
+
+        navigator.geolocation.getCurrentPosition(
+
+            function(position) {
+
+                const lat =
+                    position.coords.latitude;
+
+                const lon =
+                    position.coords.longitude;
+
+                map.setView(
+                    [lat, lon],
+                    16
+                );
+
+                if (marker) {
+                    map.removeLayer(marker);
+                }
+
+                marker =
+                    L.marker([lat, lon])
+                    .addTo(map);
+
+                marker
+                    .bindPopup("📍 Вы здесь")
+                    .openPopup();
+
+                locationButton.textContent = "📍";
+            },
+
+            function(error) {
+
+                console.log(
+                    "Ошибка геолокации:",
+                    error
+                );
+
+                locationButton.textContent = "📍";
+
+                alert(
+                    "Не удалось определить местоположение."
+                );
+            },
+
+            {
+                enableHighAccuracy: true,
+                timeout: 10000,
+                maximumAge: 0
+            }
+        );
+    }
+);
+
 </script>
 
 </body>
-</html>
+</html>.
