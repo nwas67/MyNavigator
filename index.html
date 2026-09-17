@@ -100,35 +100,6 @@ body {
 .result:active {
     background: #eeeeee;
 }
-
-/* КНОПКА МОЕГО МЕСТОПОЛОЖЕНИЯ */
-
-.location-button {
-    position: fixed;
-
-    right: 15px;
-    bottom: 25px;
-
-    width: 55px;
-    height: 55px;
-
-    z-index: 1000;
-
-    border: none;
-    border-radius: 18px;
-
-    background: white;
-
-    font-size: 25px;
-
-    box-shadow: 0 4px 15px rgba(0,0,0,0.25);
-
-    cursor: pointer;
-}
-
-.location-button:active {
-    transform: scale(0.94);
-}
 </style>
 </head>
 
@@ -156,15 +127,6 @@ body {
 <!-- РЕЗУЛЬТАТЫ -->
 
 <div id="results"></div>
-
-<!-- МОЁ МЕСТОПОЛОЖЕНИЕ -->
-
-<button
-    id="locationButton"
-    class="location-button"
-    title="Моё местоположение">
-    📍
-</button>
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
@@ -198,12 +160,7 @@ const search =
 const results =
     document.getElementById("results");
 
-const locationButton =
-    document.getElementById("locationButton");
-
 let marker = null;
-
-let locationMarker = null;
 
 let timer = null;
 
@@ -237,7 +194,7 @@ search.addEventListener(
 );
 
 /* =========================
-   ПОИСК МЕСТ
+   NOMINATIM
 ========================= */
 
 async function findPlaces(query) {
@@ -272,10 +229,7 @@ async function findPlaces(query) {
         }
 
         places.forEach(
-            function
-
-
-lace) {
+            function(place) {
 
                 const item =
                     document.createElement("div");
@@ -300,7 +254,9 @@ lace) {
                         );
 
                         if (marker) {
-                            map.removeLayer(marker);
+
+
+map.removeLayer(marker);
                         }
 
                         marker =
@@ -333,91 +289,7 @@ lace) {
 
 }
 
-/* =========================
-   МОЁ МЕСТОПОЛОЖЕНИЕ
-========================= */
-
-locationButton.onclick = function() {
-
-    if (!navigator.geolocation) {
-
-        alert(
-            "Ваш браузер не поддерживает геолокацию."
-        );
-
-        return;
-    }
-
-    locationButton.textContent = "⏳";
-
-    navigator.geolocation.getCurrentPosition(
-
-        function(position) {
-
-            const lat =
-                position.coords.latitude;
-
-            const lon =
-                position.coords.longitude;
-
-            map.setView(
-                [lat, lon],
-                16
-            );
-
-            if (locationMarker) {
-
-                map.removeLayer(
-                    locationMarker
-                );
-
-            }
-
-            locationMarker =
-                L.circleMarker(
-                    [lat, lon],
-                    {
-                        radius: 9,
-                        color: "#ffffff",
-                        weight: 4,
-                        fillColor: "#1877f2",
-                        fillOpacity: 1
-                    }
-                )
-                .addTo(map);
-
-            locationMarker.bindPopup(
-                "Вы здесь"
-            );
-
-            locationButton.textContent = "📍";
-
-        },
-
-        function(error) {
-
-            locationButton.textContent = "📍";
-
-            alert(
-                "Не удалось получить местоположение. " +
-                "Разреши браузеру доступ к геолокации."
-            );
-
-            console.log(error);
-
-        },
-
-        {
-            enableHighAccuracy: true,
-            timeout: 10000,
-            maximumAge: 0
-        }
-
-    );
-
-};
-
 </script>
 
 </body>
-</html>(p
+</html>
