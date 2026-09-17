@@ -6,8 +6,10 @@
 
 <title>My Navigator</title>
 
-<link rel="stylesheet"
-href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<link
+  rel="stylesheet"
+  href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+/>
 
 <style>
 html, body {
@@ -18,17 +20,20 @@ html, body {
 }
 
 #map {
+    position: fixed;
+    inset: 0;
     width: 100%;
     height: 100%;
 }
 
 /* ПОИСК */
+
 .search-box {
     position: fixed;
     top: 15px;
     left: 15px;
     right: 15px;
-    z-index: 1000;
+    z-index: 9999;
 }
 
 #search {
@@ -40,16 +45,17 @@ html, body {
     background: white;
     font-size: 17px;
     outline: none;
-    box-shadow: 0 4px 18px rgba(0,0,0,0.20);
+    box-shadow: 0 4px 18px rgba(0,0,0,0.2);
 }
 
 /* РЕЗУЛЬТАТЫ */
+
 #results {
     position: fixed;
     top: 75px;
     left: 15px;
     right: 15px;
-    z-index: 1000;
+    z-index: 9999;
 }
 
 .result {
@@ -59,41 +65,44 @@ html, body {
     border-radius: 14px;
     box-shadow: 0 3px 12px rgba(0,0,0,0.15);
     font-size: 15px;
-    cursor: pointer;
 }
 
-/* КНОПКА ГЕОЛОКАЦИИ */
+/* ГЕОЛОКАЦИЯ */
+
 .location-button {
     position: fixed;
     right: 15px;
     bottom: 25px;
-    z-index: 1000;
+    z-index: 9999;
 
     width: 55px;
     height: 55px;
 
     border: none;
     border-radius: 18px;
-
     background: white;
+
     font-size: 25px;
 
     box-shadow: 0 4px 15px rgba(0,0,0,0.25);
 }
 
-/* КАРТОЧКА МАРШРУТА */
+/* ПАНЕЛЬ МАРШРУТА */
+
 .route-panel {
     position: fixed;
     left: 15px;
     right: 15px;
     bottom: 15px;
-    z-index: 1000;
+
+    z-index: 9998;
 
     display: none;
 
+    padding: 18px;
+
     background: white;
     border-radius: 22px;
-    padding: 18px;
 
     box-shadow: 0 5px 25px rgba(0,0,0,0.25);
 }
@@ -104,7 +113,7 @@ html, body {
 
 .route-title {
     font-size: 18px;
-    font-weight: 700;
+    font-weight: bold;
     margin-bottom: 12px;
 }
 
@@ -131,10 +140,6 @@ html, body {
 
     font-size: 16px;
     font-weight: 600;
-}
-
-.route-button:active {
-    transform: scale(0.98);
 }
 </style>
 </head>
@@ -164,7 +169,7 @@ html, body {
 <div id="routePanel" class="route-panel">
 
     <div class="route-title">
-        Маршрут
+        🚗 Маршрут
     </div>
 
     <div class="route-info">
@@ -201,11 +206,17 @@ const map = L.map("map").setView(
     10
 );
 
+/*
+   Именно этот адрес тайлов
+   раньше у тебя показывал карту.
+*/
+
 L.tileLayer(
-    "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+    "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
     {
         maxZoom: 19,
-        attribution: "&copy; OpenStreetMap contributors"
+        attribution:
+            "&copy; OpenStreetMap contributors"
     }
 ).addTo(map);
 
@@ -235,15 +246,12 @@ const duration =
     document.getElementById("duration");
 
 let marker = null;
-
 let userMarker = null;
-
 let routeLine = null;
 
 let timer = null;
 
 let userLocation = null;
-
 let destination = null;
 
 /* =========================
@@ -259,12 +267,10 @@ search.addEventListener(
         const query =
             search.value.trim();
 
-        if (query.length < 3) {
 
-            results
+if (query.length < 3) {
 
-
-nnerHTML = "";
+            results.innerHTML = "";
 
             return;
         }
@@ -347,18 +353,10 @@ nnerHTML = "";
 
                                     routePanel.classList
                                         .add("show");
-
-                                    distance.textContent =
-                                        "📏 —";
-
-                                    duration.textContent =
-                                        "🕐 —";
                                 }
                             );
 
-                            results.appendChild(
-                                item
-                            );
+                            results.appendChild(item);
                         }
                     );
 
@@ -407,9 +405,7 @@ locationButton.addEventListener(
                     position.coords.longitude;
 
                 userLocation = {
-
-
-lat: lat,
+                    lat: lat,
                     lon: lon
                 };
 
@@ -419,7 +415,9 @@ lat: lat,
                 );
 
                 if (userMarker) {
-                    map.removeLayer(
+
+
+map.removeLayer(
                         userMarker
                     );
                 }
@@ -464,7 +462,7 @@ lat: lat,
 );
 
 /* =========================
-   ПОСТРОЕНИЕ МАРШРУТА
+   МАРШРУТ
 ========================= */
 
 routeButton.addEventListener(
@@ -474,7 +472,7 @@ routeButton.addEventListener(
         if (!userLocation) {
 
             alert(
-                "Сначала нажми 📍 и разреши доступ к местоположению."
+                "Сначала нажми 📍."
             );
 
             return;
@@ -528,16 +526,12 @@ routeButton.addEventListener(
             const route =
                 data.routes[0];
 
-            /* Удаляем старый маршрут */
-
             if (routeLine) {
 
                 map.removeLayer(
                     routeLine
                 );
             }
-
-            /* Рисуем новый */
 
             routeLine =
                 L.geoJSON(
@@ -547,28 +541,23 @@ routeButton.addEventListener(
                     }
                 ).addTo(map);
 
-            /* Расстояние */
-
-            const distanceKm =
+            const km =
                 route.distance / 1000;
 
             distance.textContent =
                 "📏 " +
-                distanceKm.toFixed(1) +
+                km.toFixed(1) +
                 " км";
-
-            /* Время */
 
             const minutes =
                 Math.round(
                     route.duration / 60
                 );
 
-            let timeText;
-
             if (minutes < 60) {
 
-                timeText =
+                duration.textContent =
+                    "🕐 " +
                     minutes +
                     " мин";
 
@@ -582,18 +571,13 @@ routeButton.addEventListener(
                 const mins =
                     minutes % 60;
 
-                timeText =
+                duration.textContent =
+                    "🕐 " +
                     hours +
                     " ч " +
                     mins +
                     " мин";
             }
-
-            duration.textContent =
-                "🕐 " +
-                timeText;
-
-            /* Приближаем карту */
 
             map.fitBounds(
                 routeLine.getBounds(),
@@ -603,10 +587,7 @@ routeButton.addEventListener(
             );
 
             routeButton.textContent =
-                "Марш
-
-
-рут построен ✓";
+                "Маршрут построен ✓";
 
         } catch (error) {
 
@@ -628,4 +609,4 @@ routeButton.addEventListener(
 </script>
 
 </body>
-</html>.i
+</html>
