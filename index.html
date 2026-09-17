@@ -25,7 +25,8 @@ body {
     height: 100%;
 }
 
-/* Поисковая панель */
+/* ПОИСК */
+
 .search-box {
     position: fixed;
     top: 15px;
@@ -61,12 +62,54 @@ body {
 
     font-size: 17px;
 }
+
+/* РЕЗУЛЬТАТЫ */
+
+#results {
+    position: fixed;
+
+    top: 78px;
+    left: 15px;
+    right: 15px;
+
+    z-index: 1001;
+
+    background: white;
+
+    border-radius: 18px;
+
+    overflow: hidden;
+
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+}
+
+.result {
+    padding: 15px;
+
+    border-bottom: 1px solid #eeeeee;
+
+    font-size: 15px;
+
+    cursor: pointer;
+}
+
+.result:last-child {
+    border-bottom: none;
+}
+
+.result:active {
+    background: #eeeeee;
+}
 </style>
 </head>
 
 <body>
 
+<!-- КАРТА -->
+
 <div id="map"></div>
+
+<!-- ПОИСК -->
 
 <div class="search-box">
 
@@ -76,13 +119,22 @@ body {
         id="search"
         type="text"
         placeholder="Куда едем?"
+        autocomplete="off"
     >
 
 </div>
 
+<!-- РЕЗУЛЬТАТЫ -->
+
+<div id="results"></div>
+
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
 <script>
+
+/* =========================
+   КАРТА
+========================= */
 
 const map = L.map("map").setView(
     [55.751244, 37.618423],
@@ -97,6 +149,145 @@ L.tileLayer(
             "&copy; OpenStreetMap contributors"
     }
 ).addTo(map);
+
+/* =========================
+   ЭЛЕМЕНТЫ
+========================= */
+
+const search =
+    document.getElementById("search");
+
+const results =
+    document.getElementById("results");
+
+let marker = null;
+
+let timer = null;
+
+/* =========================
+   ПОИСК
+========================= */
+
+search.addEventListener(
+    "input",
+    function() {
+
+        clearTimeout(timer);
+
+        const query =
+            search.value.trim();
+
+        results.innerHTML = "";
+
+        if (query.length < 3) {
+            return;
+        }
+
+        timer = setTimeout(
+            function() {
+                findPlaces(query);
+            },
+            600
+        );
+
+    }
+);
+
+/* =========================
+   NOMINATIM
+========================= */
+
+async function findPlaces(query) {
+
+    results.innerHTML =
+        '<div class="result">Ищем...</div>';
+
+    try {
+
+        const url =
+            "https://nominatim.openstreetmap.org/search" +
+            "?format=json" +
+            "&limit=5" +
+            "&accept-language=ru" +
+            "&q=" +
+            encodeURIComponent(query);
+
+        const response =
+            await fetch(url);
+
+        const places =
+            await response.json();
+
+        results.innerHTML = "";
+
+        if (places.length === 0) {
+
+            results.innerHTML =
+                '<div class="result">Ничего не найдено</div>';
+
+            return;
+        }
+
+        places.forEach(
+            function(place) {
+
+                const item =
+                    document.createElement("div");
+
+                item.className = "result";
+
+                item.textContent =
+                    place.display_name;
+
+                item.onclick =
+                    function() {
+
+                        const lat =
+                            Number(place.lat);
+
+                        const lon =
+                            Number(place.lon);
+
+                        map.setView(
+                            [lat, lon],
+                            16
+                        );
+
+                        if (marker) {
+
+
+map.removeLayer(marker);
+                        }
+
+                        marker =
+                            L.marker([lat, lon])
+                            .addTo(map)
+                            .bindPopup(
+                                place.display_name
+                            )
+                            .openPopup();
+
+                        results.innerHTML = "";
+
+                    };
+
+                results.appendChild(item);
+
+            }
+        );
+
+    }
+
+    catch (error) {
+
+        console.error(error);
+
+        results.innerHTML =
+            '<div class="result">Ошибка поиска</div>';
+
+    }
+
+}
 
 </script>
 
