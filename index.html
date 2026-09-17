@@ -2,82 +2,361 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
+
     <meta
         name="viewport"
-        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+        content="width=device-width, initial-scale=1.0"
     >
-
-    <meta name="theme-color" content="#111111">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 
     <title>My Navigator</title>
 
-    <link rel="manifest" href="manifest.json">
-
     <link
-    rel="stylesheet"
-    href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css"
->
+        rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css"
+    >
 
-    <link rel="stylesheet" href="style.css">
+    <style>
+        html,
+        body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        #map {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        #search {
+            position: absolute;
+            z-index: 1000;
+            top: 20px;
+            left: 20px;
+            right: 20px;
+            display: flex;
+        }
+
+        #destination {
+            flex: 1;
+            padding: 15px;
+            border: 0;
+            border-radius: 15px 0 0 15px;
+            font-size: 16px;
+            box-shadow: 0 3px 15px #0003;
+        }
+
+        #searchButton {
+            width: 55px;
+            border: 0;
+            border-radius: 0 15px 15px 0;
+            background: #111;
+            color: white;
+            font-size: 20px;
+        }
+
+        #locationButton {
+            position: absolute;
+            z-index: 1000;
+            bottom: 25px;
+            left: 20px;
+            right: 20px;
+            height: 55px;
+            border: 0;
+            border-radius: 15px;
+            background: white;
+            box-shadow: 0 3px 15px #0003;
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        #results {
+            position: absolute;
+            z-index: 1001;
+            top: 80px;
+            left: 20px;
+            right: 20px;
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            display: none;
+            box-shadow: 0 3px 15px #0003;
+        }
+
+        .result {
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+            cursor: pointer;
+        }
+    </style>
 </head>
 
 <body>
 
-<div id="app">
-
     <div id="map"></div>
 
-    <div class="top-panel">
+    <div id="search">
+        <input
+            id="destination"
+            placeholder="Куда едем?"
+        >
 
-        <div class="search-box">
-            <input
-                id="destination"
-                type="text"
-                placeholder="Куда едем?"
-                autocomplete="off"
-            >
-
-            <button id="searchButton">🔍</button>
-        </div>
-
-        <div id="searchResults"></div>
-
+        <button id="searchButton">🔍</button>
     </div>
 
-    <div class="bottom-panel">
+    <div id="results"></div>
 
-        <div id="routeInfo" class="route-info hidden">
+    <button id="locationButton">
+        📍 Моё местоположение
+    </button>
 
-            <div>
-                <span class="route-label">Расстояние</span>
-                <strong id="distance">—</strong>
-            </div>
+    <script
+        src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js"
+    ></script>
 
-            <div>
-                <span class="route-label">Время</span>
-                <strong id="duration">—</strong>
-            </div>
+    <script>
 
-            <button id="clearRoute">✕</button>
+        // Создаём карту
 
-        </div>
+        const map = L.map("map").setView(
+            [55.751244, 37.618423],
+            10
+        );
 
-        <button id="locationButton" class="location-button">
-            📍
-            <span>Моё местоположение</span>
-        </button>
+        // Загружаем карту OpenStreetMap
 
-    </div>
+        L.tileLayer(
+            "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+            {
+                maxZoom: 19,
+                attribution:
+                    "&copy; OpenStreetMap contributors"
+            }
+        ).addTo(map);
 
-</div>
+        let userMarker = null;
 
-<script
-    src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js">
-</script>
+        // Местоположение
 
-<script src="app.js"></script>
+        document
+            .getElementById("locationButton")
+            .addEventListener(
+                "click",
+                function () {
+
+                    if (!navigator.geolocation) {
+                        alert(
+                            "Геолокация не поддерживается"
+                        );
+                        return;
+                    }
+
+                    navigator.geolocation.getCurrentPosition(
+                        function (position) {
+
+                            const lat =
+                                position.coords.latitude;
+
+                            const lon =
+                                position.coords.longitude;
+
+                            const location = [
+                                lat,
+                                lon
+                            ];
+
+                            if (userMarker) {
+                                map.removeLayer(
+                                    userMarker
+                                );
+                            }
+
+
+.openPopup();
+
+                                results.style.display =
+                                    "none";
+
+                            };
+
+                        results.appendChild(
+                            item
+                        );
+
+                    }
+                );
+
+            }
+
+            catch (error) {
+
+                console.error(error);
+
+                results.innerHTML =
+                    '<div class="result">' +
+                    "Ошибка поиска" +
+                    "</div>";
+
+            }
+
+        }
+
+    </script>
 
 </body>
 </html>
+
+
+userMarker =
+                                L.marker(location)
+                                    .addTo(map)
+                                    .bindPopup(
+                                        "Вы здесь"
+                                    )
+                                    .openPopup();
+
+                            map.setView(
+                                location,
+                                16
+                            );
+
+                        },
+
+                        function () {
+
+                            alert(
+                                "Разреши браузеру доступ к местоположению."
+                            );
+
+                        },
+
+                        {
+                            enableHighAccuracy: true
+                        }
+                    );
+
+                }
+            );
+
+        // Поиск
+
+        document
+            .getElementById("searchButton")
+            .addEventListener(
+                "click",
+                search
+            );
+
+        document
+            .getElementById("destination")
+            .addEventListener(
+                "keydown",
+                function (event) {
+
+                    if (
+                        event.key === "Enter"
+                    ) {
+                        search();
+                    }
+
+                }
+            );
+
+        async function search() {
+
+            const query =
+                document
+                    .getElementById("destination")
+                    .value
+                    .trim();
+
+            if (!query) {
+                return;
+            }
+
+            const results =
+                document.getElementById(
+                    "results"
+                );
+
+            results.style.display =
+                "block";
+
+            results.innerHTML =
+                '<div class="result">🔎 Ищем...</div>';
+
+            try {
+
+                const response =
+                    await fetch(
+                        "https://nominatim.openstreetmap.org/search?" +
+                        "format=json&limit=5&q=" +
+                        encodeURIComponent(query),
+                        {
+                            headers: {
+                                "Accept-Language": "ru"
+                            }
+                        }
+                    );
+
+                const data =
+                    await response.json();
+
+                results.innerHTML = "";
+
+                if (!data.length) {
+
+                    results.innerHTML =
+                        '<div class="result">' +
+                        "Ничего не найдено" +
+                        "</div>";
+
+                    return;
+                }
+
+                data.forEach(
+                    function (place) {
+
+                        const item =
+                            document.createElement(
+                                "div"
+                            );
+
+                        item.className =
+                            "result";
+
+                        item.textContent =
+                            place.display_name;
+
+                        item.onclick =
+                            function () {
+
+                                const lat =
+                                    parseFloat(
+                                        place.lat
+                                    );
+
+                                const lon =
+                                    parseFloat(
+                                        place.lon
+                                    );
+
+                                map.setView(
+                                    [lat, lon],
+                                    15
+                                );
+
+                                L.marker([
+                                    lat,
+                                    lon
+                                ])
+                                .addTo(map)
+                                .bindPopup(
+                                    place.display_name
+                                )
