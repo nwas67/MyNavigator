@@ -15,36 +15,28 @@
             box-sizing: border-box;
         }
 
-        html,
-        body {
+        html, body {
             margin: 0;
             padding: 0;
             width: 100%;
             height: 100%;
             overflow: hidden;
-            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display",
-                "SF Pro Text", Arial, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", Arial, sans-serif;
         }
 
-        /* КАРТА */
-
+        /* КАРТА — оставляем как в рабочей версии */
         #map {
-            position: absolute;
-            top: 0;
-            left: 0;
             width: 100%;
             height: 100%;
-            z-index: 1;
         }
 
-        /* ВЕРХНИЙ ПОИСК */
-
+        /* ПОИСК */
         .top-panel {
-            position: absolute;
+            position: fixed;
             top: 18px;
             left: 15px;
             right: 15px;
-            z-index: 1000;
+            z-index: 9999;
         }
 
         .search-box {
@@ -52,10 +44,8 @@
             display: flex;
             align-items: center;
             padding: 0 18px;
-
             background: rgba(255, 255, 255, 0.96);
             border-radius: 20px;
-
             box-shadow: 0 4px 18px rgba(0, 0, 0, 0.18);
         }
 
@@ -69,47 +59,35 @@
             color: #777;
         }
 
-        /* КНОПКА ГЕОЛОКАЦИИ */
-
+        /* ГЕОЛОКАЦИЯ */
         #locationBtn {
-            position: absolute;
+            position: fixed;
             right: 18px;
-            bottom: 135px;
+            bottom: 140px;
+            z-index: 9999;
 
             width: 56px;
             height: 56px;
 
-            z-index: 1000;
-
-            border: none;
+            border: 0;
             border-radius: 50%;
 
-            background: rgba(255, 255, 255, 0.96);
-
+            background: white;
             font-size: 25px;
 
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.22);
-
-            cursor: pointer;
-        }
-
-        #locationBtn:active {
-            transform: scale(0.94);
         }
 
         /* НИЖНЯЯ ПАНЕЛЬ */
-
         .bottom-panel {
-            position: absolute;
+            position: fixed;
             left: 12px;
             right: 12px;
             bottom: 12px;
-
-            z-index: 1000;
+            z-index: 9999;
 
             background: rgba(255, 255, 255, 0.96);
             border-radius: 24px;
-
             padding: 15px;
 
             box-shadow: 0 5px 25px rgba(0, 0, 0, 0.2);
@@ -130,29 +108,15 @@
             flex: 1;
             height: 55px;
 
-            border: none;
+            border: 0;
             border-radius: 17px;
-
             background: #f2f2f2;
 
             font-size: 15px;
-            font-weight: 500;
-
-            cursor: pointer;
         }
-
-        .quick-button:active {
-            transform: scale(0.97);
-        }
-
-        /* УБИРАЕМ ZOOM LEAFLET */
 
         .leaflet-control-zoom {
             display: none;
-        }
-
-        .leaflet-control-attribution {
-            font-size: 9px;
         }
     </style>
 </head>
@@ -160,11 +124,9 @@
 <body>
 
     <!-- КАРТА -->
-
     <div id="map"></div>
 
     <!-- ПОИСК -->
-
     <div class="top-panel">
         <div class="search-box">
             <div class="search-icon">🔍</div>
@@ -172,57 +134,32 @@
         </div>
     </div>
 
-    <!-- ГЕОЛОКАЦИЯ -->
-
+    <!-- МОЁ МЕСТО -->
     <button id="locationBtn">📍</button>
 
     <!-- НИЖНЯЯ ПАНЕЛЬ -->
-
     <div class="bottom-panel">
-
-        <div class="panel-title">
-            Быстрый доступ
-        </div>
+        <div class="panel-title">Быстрый доступ</div>
 
         <div class="quick-buttons">
+            <button class="quick-button">🏠<br
+</button>
+            <button class="quick-button">⭐<br
+ранное</button>
+            <button class="quick-button">🕘
 
-            <button class="quick-button">
-                🏠<br
-              Дом
-            </button>
-
-            <button class="quick-button">
-                ⭐<br
-              Избранное
-            </button>
-
-            <button class="quick-button">
-                🕘
-
-             История
-            </button>
-
+рия</button>
         </div>
-
     </div>
 
-    <!-- LEAFLET -->
-
-    <script src="https://cdn.jsdelivr
-
-
-et/npm/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js"></script>
 
     <script>
-
-        /* СОЗДАЁМ КАРТУ */
-
+        /* КАРТА */
         const map = L.map("map").setView(
             [55.751244, 37.618423],
             10
         );
-
-        /* КАРТА OPENSTREETMAP */
 
         L.tileLayer(
             "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
@@ -233,72 +170,45 @@ et/npm/leaflet@1.9.4/dist/leaflet.js"></script>
         ).addTo(map);
 
         /* ГЕОЛОКАЦИЯ */
-
         let userMarker = null;
 
-        document
-            .getElementById("locationBtn")
-            .addEventListener("click", function () {
+        document.getElementById("locationBtn").addEventListener("click", function () {
 
-                if (!navigator.geolocation) {
-                    alert("Геолокация не поддерживается");
-                    return;
-                }
+            if (!navigator.geolocation) {
+                alert("Геолокация не поддерживается");
+                return;
+            }
 
-                navigator.geolocation.getCurrentPosition(
 
-                    function (position) {
+or.geolocation.getCurrentPosition(
+                function (position) {
 
-                        const lat =
-                            position.coords.latitude;
+                    const lat = position.coords.latitude;
+                    const lon = position.coords.longitude;
 
-                        const lon =
-                            position.coords.longitude;
-
-                        if (userMarker) {
-
-                            userMarker.setLatLng([
-                                lat,
-                                lon
-                            ]);
-
-                        } else {
-
-                            userMarker = L.marker([
-                                lat,
-                                lon
-                            ]).addTo(map);
-
-                            userMarker
-                                .bindPopup("Вы здесь")
-                                .openPopup();
-                        }
-
-                        map.setView(
-                            [lat, lon],
-                            16
-                        );
-                    },
-
-                    function () {
-
-                        alert(
-                            "Не удалось определить местоположение"
-                        );
-
+                    if (userMarker) {
+                        userMarker.setLatLng([lat, lon]);
+                    } else {
+                        userMarker = L.marker([lat, lon])
+                            .addTo(map)
+                            .bindPopup("Вы здесь")
+                            .openPopup();
                     }
 
-                );
+                    map.setView([lat, lon], 16);
+                },
 
-            });
+                function () {
+                    alert("Не удалось определить местоположение");
+                }
+            );
+        });
 
-        /* ПЕРЕСЧИТЫВАЕМ РАЗМЕР КАРТЫ */
-
+        /* ВАЖНО: после появления интерфейса пересчитываем карту */
         setTimeout(function () {
             map.invalidateSize();
-        }, 500);
-
+        }, 1000);
     </script>
 
 </body>
-</html>.n
+</html> navigat
